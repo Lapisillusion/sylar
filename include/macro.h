@@ -8,7 +8,7 @@
 
 #include <string.h>
 #include <assert.h>
-#include "log.h"
+//#include "log.h"
 #include "util.h"
 
 #if defined __GNUC__ || defined __llvm__

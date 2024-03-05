@@ -14,6 +14,74 @@
 #include "mutex.h"
 #include "singleton.h"
 
+/**
+ * @brief 获取root日志器
+ */
+#define SYLAR_LOG_ROOT() sylar::LoggerMgr::GetInstance()->getRoot()
+
+/**
+ * @brief 获取指定名称的日志器
+ */
+#define SYLAR_LOG_NAME(name) sylar::LoggerMgr::GetInstance()->getLogger(name)
+
+/**
+ * @brief 使用流式方式将日志级别level的日志写入到logger
+ * @details 构造一个LogEventWrap对象，包裹包含日志器和日志事件，在对象析构时调用日志器写日志事件
+ * @todo 协程id未实现，暂时写0
+ */
+#define SYLAR_LOG_LEVEL(logger, level)                                                                                                                 \
+    if (level <= logger->getLevel())                                                                                                                   \
+    sylar::LogEventWrap(logger, sylar::LogEvent::ptr(new sylar::LogEvent(logger->getName(),                                                            \
+                                                                         level, __FILE__, __LINE__, sylar::GetElapsed() - logger->getCreateTime(),     \
+                                                                         sylar::GetThreadId(), sylar::GetFiberId(), time(0), sylar::GetThreadName()))) \
+        .getLogEvent()                                                                                                                                 \
+        ->getSS()
+
+#define SYLAR_LOG_FATAL(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::FATAL)
+
+#define SYLAR_LOG_ALERT(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::ALERT)
+
+#define SYLAR_LOG_CRIT(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::CRIT)
+
+#define SYLAR_LOG_ERROR(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::ERROR)
+
+#define SYLAR_LOG_WARN(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::WARN)
+
+#define SYLAR_LOG_NOTICE(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::NOTICE)
+
+#define SYLAR_LOG_INFO(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::INFO)
+
+#define SYLAR_LOG_DEBUG(logger) SYLAR_LOG_LEVEL(logger, sylar::LogLevel::DEBUG)
+
+/**
+ * @brief 使用C printf方式将日志级别level的日志写入到logger
+ * @details 构造一个LogEventWrap对象，包裹包含日志器和日志事件，在对象析构时调用日志器写日志事件
+ * @todo 协程id未实现，暂时写0
+ */
+#define SYLAR_LOG_FMT_LEVEL(logger, level, fmt, ...)                                                                                                   \
+    if (level <= logger->getLevel())                                                                                                                   \
+    sylar::LogEventWrap(logger, sylar::LogEvent::ptr(new sylar::LogEvent(logger->getName(),                                                            \
+                                                                         level, __FILE__, __LINE__, sylar::GetElapsed() - logger->getCreateTime(),     \
+                                                                         sylar::GetThreadId(), sylar::GetFiberId(), time(0), sylar::GetThreadName()))) \
+        .getLogEvent()                                                                                                                                 \
+        ->printf(fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_FATAL(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::FATAL, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_ALERT(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::ALERT, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_CRIT(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::CRIT, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_ERROR(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::ERROR, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_WARN(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::WARN, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_NOTICE(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::NOTICE, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_INFO(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::INFO, fmt, __VA_ARGS__)
+
+#define SYLAR_LOG_FMT_DEBUG(logger, fmt, ...) SYLAR_LOG_FMT_LEVEL(logger, sylar::LogLevel::DEBUG, fmt, __VA_ARGS__)
+
 namespace sylar
 {
     /**
@@ -55,6 +123,11 @@ namespace sylar
          */
         static const char *toString(LogLevel::Level level);
 
+        /**
+         * @brief 字符串转日志级别
+         * @param[in] string 字符串
+         * @return 日志级别enum
+         */
         static LogLevel::Level toLevel(const std::string &string);
     };
 
@@ -87,11 +160,11 @@ namespace sylar
 
     public:
         typedef std::shared_ptr<LogEvent> ptr;
-        LogEvent(/* args */);
+        LogEvent(/* args */) = default;
 
         LogEvent(const std::string &logger_name, LogLevel::Level level, const char *file, int32_t line, int64_t elapse, uint32_t thread_id, uint64_t fiber_id, time_t time, const std::string &thread_name);
 
-        ~LogEvent();
+        ~LogEvent() = default;
 
         /**
          * @brief 获取日志级别
@@ -167,7 +240,7 @@ namespace sylar
 
     public:
         typedef std::shared_ptr<LogFormatter> ptr;
-        LogFormatter(/* args */);
+        // LogFormatter(/* args */) = default;
         /**
          * @brief 构造函数
          * @param[in] pattern 格式模板，参考sylar与log4cpp
@@ -191,7 +264,7 @@ namespace sylar
          * 默认格式描述：年-月-日 时:分:秒 [累计运行毫秒数] \\t 线程id \\t 线程名称 \\t 协程id \\t [日志级别] \\t [日志器名称] \\t 文件名:行号 \\t 日志消息 换行符
          */
         LogFormatter(const std::string &pattern = "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
-        ~LogFormatter();
+        ~LogFormatter()=default;
 
         /**
          * @brief 初始化，解析格式模板，提取模板项
@@ -215,7 +288,7 @@ namespace sylar
          * @param[in] os 日志输出流
          * @return 格式化日志流
          */
-        std::ostream format(std::ostream os, LogEvent::ptr event);
+        std::ostream &format(std::ostream &os, LogEvent::ptr event);
 
         /**
          * @brief 日志内容格式化项，虚基类，用于派生出不同的格式化项
@@ -227,7 +300,7 @@ namespace sylar
             /* data */
         public:
             typedef std::shared_ptr<FormatItem> ptr;
-            virtual ~FormatItem();
+            virtual ~FormatItem() = default;
 
             virtual void format(std::ostream &os, LogEvent::ptr event) = 0;
         };
@@ -256,13 +329,13 @@ namespace sylar
     public:
         typedef std::shared_ptr<LogAppender> ptr;
 
-        LogAppender(/* args */);
+        LogAppender(/* args */) = default;
         /**
          * @brief 构造函数
          * @param[in] default_formatter 默认日志格式器
          */
         LogAppender(LogFormatter::ptr formatter);
-        ~LogAppender();
+        ~LogAppender() = default;
 
         /**
          * @brief 设置日志格式器
@@ -286,7 +359,7 @@ namespace sylar
     public:
         typedef std::shared_ptr<StdoutLogAppender> ptr;
         StdoutLogAppender(/* args */);
-        ~StdoutLogAppender();
+        ~StdoutLogAppender() = default;
 
         void log(LogEvent::ptr event) override;
     };
@@ -294,11 +367,17 @@ namespace sylar
     class FileLogAppender : public LogAppender
     {
     private:
-        /* data */
+        /// 文件路径
+        std::string m_filename;
+        /// 文件流
+        std::ofstream m_filestream;
+        /// 上次重打打开时间
+        uint64_t m_lastTime = 0;
+
     public:
         typedef std::shared_ptr<FileLogAppender> ptr;
-        FileLogAppender(/* args */);
-        ~FileLogAppender();
+        FileLogAppender(const std::string &file);
+        ~FileLogAppender() = default;
 
         void log(LogEvent::ptr event) override;
         /**
@@ -317,19 +396,19 @@ namespace sylar
         typedef std::shared_ptr<Logger> ptr;
         typedef Spinlock MutexType;
 
-        Logger(/* args */);
+        // Logger(/* args */);
         Logger(const std::string &name = "default");
-        ~Logger();
+        ~Logger()=default;
 
         /**
          * @brief 设置日志级别
          */
-        void setLevel(LogLevel::Level level);
+        void setLevel(LogLevel::Level level) { m_level = level; }
 
         /**
          * @brief 获取日志级别
          */
-        LogLevel::Level getLevel() const;
+        LogLevel::Level getLevel() const { return m_level; }
 
         /**
          * @brief 添加日志输出地
@@ -380,11 +459,12 @@ namespace sylar
     class LogEventWrap
     {
     private:
-        LogEvent::ptr m_event;
         Logger::ptr m_logger;
+        LogEvent::ptr m_event;
 
     public:
-        LogEventWrap(/* args */);
+        LogEventWrap(/* args */) = default;
+
         ~LogEventWrap();
 
         LogEventWrap(Logger::ptr logger, LogEvent::ptr event);
@@ -392,7 +472,7 @@ namespace sylar
         /**
          * @brief 获取日志事件
          */
-        LogEvent::ptr getEvent() const { return m_event; }
+        LogEvent::ptr getLogEvent() const { return m_event; }
     };
 
     class LoggerManager
@@ -402,7 +482,7 @@ namespace sylar
         typedef std::shared_ptr<LoggerManager> ptr;
         typedef Spinlock MutexType;
         LoggerManager(/* args */);
-        ~LoggerManager();
+        ~LoggerManager() = default;
 
         /**
          * @brief 获取日志器
@@ -414,12 +494,20 @@ namespace sylar
          */
         void init();
 
+        /**
+         * @brief 获取root日志器，等效于getLogger("root")
+         */
+        Logger::ptr getRoot() { return m_default_logger; }
+
     private:
         /* data */
         std::map<std::string, Logger::ptr> m_loggers;
         MutexType m_mutex;
         Logger::ptr m_default_logger;
     };
+
+    /// 日志器管理类单例
+    typedef sylar::Singleton<LoggerManager> LoggerMgr;
 
 } // namespace sylar
 
