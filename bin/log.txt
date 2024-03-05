@@ -1,0 +1,8 @@
+2024-03-06 00:54:35 [1001ms]	17345	brand_new_threa		0	[FATAL]	[root]	tests/test_log.cpp:37	fatal msg
+2024-03-06 00:54:35 [1001ms]	17345	brand_new_threa		0	[ERROR]	[root]	tests/test_log.cpp:38	err msg
+2024-03-06 00:59:10 [1000ms]	17845	brand_new_threa		0	[FATAL]	[root]	tests/test_log.cpp:37	fatal msg
+2024-03-06 00:59:10 [1000ms]	17845	brand_new_threa		0	[ERROR]	[root]	tests/test_log.cpp:38	err msg
+2024-03-06 00:59:57 [1001ms]	18032	brand_new_threa		0	[FATAL]	[root]	tests/test_log.cpp:37	fatal msg
+2024-03-06 00:59:57 [1001ms]	18032	brand_new_threa		0	[ERROR]	[root]	tests/test_log.cpp:38	err msg
+2024-03-06 01:00:06 [1001ms]	18086	brand_new_threa		0	[FATAL]	[root]	tests/test_log.cpp:37	fatal msg
+2024-03-06 01:00:06 [1001ms]	18086	brand_new_threa		0	[ERROR]	[root]	tests/test_log.cpp:38	err msg
