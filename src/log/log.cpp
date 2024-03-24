@@ -576,6 +576,7 @@ namespace sylar
         }
 
         Logger::ptr logger(new Logger(name));
+        logger->addAppender(std::make_shared<StdoutLogAppender>());
         m_loggers[name] = logger;
         return logger;
     }

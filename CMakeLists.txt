@@ -23,6 +23,9 @@ add_executable(sylar main.cpp
         tests/test_env.cpp
         include/config.h
         src/config/config.cpp
-        tests/test_config.cpp)
+        tests/test_config.cpp
+        include/thread.h
+        src/thread/thread.cpp
+        tests/test_thread.cpp)
 
 target_link_libraries(sylar yaml-cpp)
