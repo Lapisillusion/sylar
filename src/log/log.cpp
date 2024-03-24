@@ -13,14 +13,14 @@ namespace sylar
 #define XX(name)         \
     case LogLevel::name: \
         return #name;
-            XX(FATAL);
-            XX(ALERT);
-            XX(CRIT);
-            XX(ERROR);
-            XX(WARN);
-            XX(NOTICE);
-            XX(INFO);
-            XX(DEBUG);
+            XX(FATAL)
+            XX(ALERT)
+            XX(CRIT)
+            XX(ERROR)
+            XX(WARN)
+            XX(NOTICE)
+            XX(INFO)
+            XX(DEBUG)
 #undef XX
             default:
                 return "NOTSET";
@@ -35,23 +35,23 @@ namespace sylar
     {                           \
         return LogLevel::level; \
     }
-        XX(FATAL, fatal);
-        XX(ALERT, alert);
-        XX(CRIT, crit);
-        XX(ERROR, error);
-        XX(WARN, warn);
-        XX(NOTICE, notice);
-        XX(INFO, info);
-        XX(DEBUG, debug);
+        XX(FATAL, fatal)
+        XX(ALERT, alert)
+        XX(CRIT, crit)
+        XX(ERROR, error)
+        XX(WARN, warn)
+        XX(NOTICE, notice)
+        XX(INFO, info)
+        XX(DEBUG, debug)
 
-        XX(FATAL, FATAL);
-        XX(ALERT, ALERT);
-        XX(CRIT, CRIT);
-        XX(ERROR, ERROR);
-        XX(WARN, WARN);
-        XX(NOTICE, NOTICE);
-        XX(INFO, INFO);
-        XX(DEBUG, DEBUG);
+        XX(FATAL, FATAL)
+        XX(ALERT, ALERT)
+        XX(CRIT, CRIT)
+        XX(ERROR, ERROR)
+        XX(WARN, WARN)
+        XX(NOTICE, NOTICE)
+        XX(INFO, INFO)
+        XX(DEBUG, DEBUG)
 #undef XX
 
         return LogLevel::NOTSET;
@@ -160,7 +160,7 @@ namespace sylar
         std::string m_format;
 
     public:
-        DataTimeFormatItem(const std::string &format = "%Y-%m-%d %H:%M:%S") : m_format(format)
+        explicit DataTimeFormatItem(const std::string &format = "%Y-%m-%d %H:%M:%S") : m_format(format)
         {
             if (m_format.empty())
             {
@@ -170,7 +170,7 @@ namespace sylar
 
         void format(std::ostream &os, LogEvent::ptr event) override
         {
-            struct tm tm;
+            struct tm tm{};
             time_t time = event->getTime();
             // 可重入的，即线程安全的 _r
             localtime_r(&time, &tm);
@@ -416,7 +416,7 @@ namespace sylar
     }
 
     LogAppender::LogAppender(LogFormatter::ptr default_formatter)
-            : m_default_formatter(default_formatter)
+            : m_default_formatter(std::move(default_formatter))
     {
     }
 
@@ -557,6 +557,7 @@ namespace sylar
     {
         m_default_logger.reset(new Logger("root"));
         m_default_logger->addAppender(LogAppender::ptr(new StdoutLogAppender));
+        m_default_logger->addAppender(LogAppender::ptr(new FileLogAppender("root.log")));
         m_loggers[m_default_logger->getName()] = m_default_logger;
         init();
     }

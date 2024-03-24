@@ -161,6 +161,11 @@ namespace sylar
         /// 日志器名称
         std::string m_loggerName;
 
+        /**
+        * @brief C vprintf风格写入日志
+        */
+        void vprintf(const char *fmt, va_list ap);
+
     public:
         typedef std::shared_ptr<LogEvent> ptr;
         LogEvent(/* args */) = default;
@@ -228,11 +233,6 @@ namespace sylar
          * @brief C prinf风格写入日志
          */
         void printf(const char *format, ...);
-
-        /**
-         * @brief C vprintf风格写入日志
-         */
-        void vprintf(const char *fmt, va_list ap);
     };
 
     /**
@@ -362,7 +362,7 @@ namespace sylar
     public:
         typedef std::shared_ptr<StdoutLogAppender> ptr;
         StdoutLogAppender(/* args */);
-        ~StdoutLogAppender() = default;
+        ~StdoutLogAppender() override = default;
 
         void log(LogEvent::ptr event) override;
     };
@@ -379,8 +379,8 @@ namespace sylar
 
     public:
         typedef std::shared_ptr<FileLogAppender> ptr;
-        FileLogAppender(const std::string &file);
-        ~FileLogAppender() = default;
+        explicit FileLogAppender(const std::string &file);
+        ~FileLogAppender() override = default;
 
         void log(LogEvent::ptr event) override;
         /**
