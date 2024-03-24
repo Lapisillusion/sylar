@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <cxxabi.h>
 
 namespace sylar {
 
@@ -80,7 +81,7 @@ namespace sylar {
 /**
  * @brief 日期时间转字符串
  */
-    std::string Time2Str(time_t ts = time(0), const std::string &format = "%Y-%m-%d %H:%M:%S");
+    std::string Time2Str(time_t ts = time(nullptr), const std::string &format = "%Y-%m-%d %H:%M:%S");
 
 /**
  * @brief 字符串转日期时间
@@ -211,5 +212,14 @@ namespace sylar {
         /// atof，参考atof(3)
         static double Atof(const char *str);
     };
+
+    /**
+     * @brief 获取T类型的类型字符串
+     */
+    template <class T>
+    const char *TypeToName() {
+        static const char *s_name = abi::__cxa_demangle(typeid(T).name(), nullptr, nullptr, nullptr);
+        return s_name;
+    }
 } // namespace sylar
 #endif //SYLAR_UTIL_H

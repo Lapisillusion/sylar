@@ -266,7 +266,7 @@ namespace sylar
          *
          * 默认格式描述：年-月-日 时:分:秒 [累计运行毫秒数] \\t 线程id \\t 线程名称 \\t 协程id \\t [日志级别] \\t [日志器名称] \\t 文件名:行号 \\t 日志消息 换行符
          */
-        explicit LogFormatter(const std::string &pattern = "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
+        explicit LogFormatter(std::string pattern = "%d{%Y-%m-%d %H:%M:%S} [%rms]%T%t%T%N%T%F%T[%p]%T[%c]%T%f:%l%T%m%n");
         ~LogFormatter()=default;
 
         /**
@@ -337,8 +337,8 @@ namespace sylar
          * @brief 构造函数
          * @param[in] default_formatter 默认日志格式器
          */
-        LogAppender(LogFormatter::ptr formatter);
-        ~LogAppender() = default;
+        explicit LogAppender(LogFormatter::ptr formatter);
+        virtual ~LogAppender() = default;
 
         /**
          * @brief 设置日志格式器

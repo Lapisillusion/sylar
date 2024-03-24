@@ -4,7 +4,7 @@
 #include <csignal>
 #include "../../include/env.h"
 #include "../../include/log.h"
-#include <string.h>
+#include <cstring>
 #include <iomanip>
 
 static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");

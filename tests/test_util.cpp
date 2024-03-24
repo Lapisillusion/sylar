@@ -4,7 +4,7 @@
 
 #include "../include/sylar.h"
 
-extern sylar::Logger::ptr g_logger;
+static sylar::Logger::ptr g_logger=  SYLAR_LOG_ROOT();
 
 void test2() {
     std::cout << sylar::BacktraceToString() << std::endl;
@@ -35,6 +35,6 @@ int test_util() {
 
     test_backtrace();
 
-    SYLAR_ASSERT2(false, "assert222");
+    //SYLAR_ASSERT2(false, "assert222");
     return 0;
 }

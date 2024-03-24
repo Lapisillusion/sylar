@@ -78,12 +78,12 @@ namespace sylar {
         /**
          * @brief 设置系统环境变量，参考setenv(3)
          */
-        bool setEnv(const std::string &key, const std::string &val);
+        static bool setEnv(const std::string &key, const std::string &val);
 
         /**
          * @brief 获取系统环境变量，参考getenv(3)
          */
-        std::string getEnv(const std::string &key, const std::string &default_value = "");
+        static std::string getEnv(const std::string &key, const std::string &default_value = "");
 
         /**
          * @brief 提供一个相对当前的路径path，返回这个path的绝对路径

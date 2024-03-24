@@ -4,7 +4,7 @@
 #include "../include/sylar.h"
 
 #include <unistd.h>
-sylar::Logger::ptr g_logger = SYLAR_LOG_ROOT(); // 默认INFO级别
+static sylar::Logger::ptr g_logger=  SYLAR_LOG_ROOT();
 
 int test_log() {
     SYLAR_LOG_FATAL(g_logger) << "fatal msg";

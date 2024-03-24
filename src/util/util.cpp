@@ -5,18 +5,17 @@
 #include "../../include/log.h"
 #include <ctime>
 #include <unistd.h>
-#include <string.h>
+#include <cstring>
 #include <dirent.h>
-#include <signal.h>
+#include <csignal>
 #include <sys/syscall.h>
 #include <sys/stat.h>
 #include <execinfo.h>
-#include <cxxabi.h>
 #include <algorithm>
 #include <sys/time.h>
 
 namespace sylar {
-    static sylar::Logger::ptr g_logger = SYLAR_LOG_NAME("system");
+    static sylar::Logger::ptr g_logger= SYLAR_LOG_NAME("system");
 
     pid_t GetThreadId() {
         return syscall(SYS_gettid);
@@ -66,7 +65,7 @@ namespace sylar {
         size_t s = backtrace(array, size);
 
         char **strings = backtrace_symbols(array, s);
-        if (strings == NULL) {
+        if (strings == nullptr) {
             SYLAR_LOG_ERROR(g_logger) << "backtrace_synbols error";
             return;
         }
@@ -91,14 +90,14 @@ namespace sylar {
     }
 
     uint64_t GetCurrentMS() {
-        struct timeval tv;
-        gettimeofday(&tv, NULL);
+        struct timeval tv{};
+        gettimeofday(&tv, nullptr);
         return tv.tv_sec * 1000ul + tv.tv_usec / 1000;
     }
 
     uint64_t GetCurrentUS() {
         struct timeval tv;
-        gettimeofday(&tv, NULL);
+        gettimeofday(&tv, nullptr);
         return tv.tv_sec * 1000 * 1000ul + tv.tv_usec;
     }
 
@@ -139,7 +138,7 @@ namespace sylar {
         if (dir == nullptr) {
             return;
         }
-        struct dirent *dp = nullptr;
+        struct dirent *dp;
         while ((dp = readdir(dir)) != nullptr) {
             if (dp->d_type == DT_DIR) {
                 if (!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
@@ -185,23 +184,23 @@ namespace sylar {
         }
         char *path = strdup(dirname.c_str());
         char *ptr = strchr(path + 1, '/');
-        do {
+        //do {
             for (; ptr; *ptr = '/', ptr = strchr(ptr + 1, '/')) {
                 *ptr = '\0';
                 if (__mkdir(path) != 0) {
-                    break;
+                    free(path);
+                    return false;
                 }
             }
-            if (ptr != nullptr) {
-                break;
-            } else if (__mkdir(path) != 0) {
-                break;
+            if (ptr != nullptr||__mkdir(path) != 0) {
+                free(path);
+                return false;
             }
             free(path);
             return true;
-        } while (0);
-        free(path);
-        return false;
+//        } while (false);
+//        free(path);
+//        return false;
     }
 
     bool FSUtil::IsRunningPidfile(const std::string &pidfile) {

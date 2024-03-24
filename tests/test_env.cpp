@@ -2,7 +2,7 @@
 // Created by nepture on 2024/3/18.
 //
 #include "../include/sylar.h"
-extern sylar::Logger::ptr g_logger;
+static sylar::Logger::ptr g_logger=  SYLAR_LOG_ROOT();
 
 sylar::Env *g_env = sylar::EnvMgr::GetInstance();
 bool test_env(int argc,char** argv){

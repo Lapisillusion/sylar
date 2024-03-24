@@ -4,8 +4,8 @@
 
 #ifndef SYLAR_MACRO_H
 #define SYLAR_MACRO_H
-#include <string.h>
-#include <assert.h>
+#include <cstring>
+#include <cassert>
 //#include "log.h"
 #include "util.h"
 

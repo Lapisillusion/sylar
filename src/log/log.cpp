@@ -84,7 +84,7 @@ namespace sylar
     class MessageFormatItem : public LogFormatter::FormatItem
     {
     public:
-        MessageFormatItem(const std::string &str)
+        explicit MessageFormatItem(const std::string &str)
         {
         }
 
@@ -97,7 +97,7 @@ namespace sylar
     class LevelFormatItem : public LogFormatter::FormatItem
     {
     public:
-        LevelFormatItem(const std::string &str) {}
+        explicit LevelFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << LogLevel::toString(event->getLevel());
@@ -107,7 +107,7 @@ namespace sylar
     class ElapseFormatItem : public LogFormatter::FormatItem
     {
     public:
-        ElapseFormatItem(const std::string &str) {}
+        explicit ElapseFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getElapse();
@@ -117,7 +117,7 @@ namespace sylar
     class LoggerNameFormatItem : public LogFormatter::FormatItem
     {
     public:
-        LoggerNameFormatItem(const std::string &str) {}
+        explicit LoggerNameFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getLoggerName();
@@ -127,7 +127,7 @@ namespace sylar
     class ThreadIdFormatItem : public LogFormatter::FormatItem
     {
     public:
-        ThreadIdFormatItem(const std::string &str) {}
+        explicit ThreadIdFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getThreadId();
@@ -137,7 +137,7 @@ namespace sylar
     class FiberIdFormatItem : public LogFormatter::FormatItem
     {
     public:
-        FiberIdFormatItem(const std::string &str) {}
+        explicit FiberIdFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getFiberId();
@@ -147,7 +147,7 @@ namespace sylar
     class ThreadNameFormatItem : public LogFormatter::FormatItem
     {
     public:
-        ThreadNameFormatItem(const std::string &str) {}
+        explicit ThreadNameFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getThreadName();
@@ -183,7 +183,7 @@ namespace sylar
     class FileNameFormatItem : public LogFormatter::FormatItem
     {
     public:
-        FileNameFormatItem(const std::string &str) {}
+        explicit FileNameFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getFile();
@@ -193,7 +193,7 @@ namespace sylar
     class LineFormatItem : public LogFormatter::FormatItem
     {
     public:
-        LineFormatItem(const std::string &str) {}
+        explicit LineFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << event->getLine();
@@ -203,7 +203,7 @@ namespace sylar
     class NewLineFormatItem : public LogFormatter::FormatItem
     {
     public:
-        NewLineFormatItem(const std::string &str) {}
+        explicit NewLineFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << std::endl;
@@ -227,7 +227,7 @@ namespace sylar
     class TabFormatItem : public LogFormatter::FormatItem
     {
     public:
-        TabFormatItem(const std::string &str) {}
+        explicit TabFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << "\t";
@@ -237,15 +237,15 @@ namespace sylar
     class PercentSignFormatItem : public LogFormatter::FormatItem
     {
     public:
-        PercentSignFormatItem(const std::string &str) {}
+        explicit PercentSignFormatItem(const std::string &str) {}
         void format(std::ostream &os, LogEvent::ptr event) override
         {
             os << "%";
         }
     };
 
-    LogFormatter::LogFormatter(const std::string &pattern)
-            : m_pattern(pattern)
+    LogFormatter::LogFormatter(std::string pattern)
+            : m_pattern(std::move(pattern))
     {
         init();
     }
@@ -281,7 +281,7 @@ namespace sylar
 
         std::string dateformat;
 
-        bool error;
+        bool error = false;
 
         bool parsing_string = true;
 
@@ -295,7 +295,7 @@ namespace sylar
                 {
                     if (!temp.empty())
                     {
-                        patterns.push_back(std::make_pair(0, temp));
+                        patterns.emplace_back(0, temp);
                     }
                     temp.clear();
                     parsing_string = false;
@@ -304,7 +304,7 @@ namespace sylar
                 }
                 else
                 {
-                    patterns.push_back(std::make_pair(1, c));
+                    patterns.emplace_back(1, c);
                     parsing_string = true; // %转义
                     i++;
                     continue;
@@ -320,7 +320,7 @@ namespace sylar
                 }
                 else
                 {
-                    patterns.push_back(std::make_pair(1, c));
+                    patterns.emplace_back(1, c);
                     parsing_string = true;
                     i++;
                     if (c != "d")

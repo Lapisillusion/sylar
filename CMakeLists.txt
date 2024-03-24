@@ -4,7 +4,7 @@ project(sylar)
 set(CMAKE_CXX_FLAGS "-rdynamic -O0 -ggdb -Wall -Werror")
 
 set(CMAKE_CXX_STANDARD 17)
-
+find_package(yaml-cpp REQUIRED)
 add_executable(sylar main.cpp
         include/util.h
         include/singleton.h
@@ -22,4 +22,7 @@ add_executable(sylar main.cpp
         src/env/env.cpp
         tests/test_env.cpp
         include/config.h
-        src/config/config.cpp)
+        src/config/config.cpp
+        tests/test_config.cpp)
+
+target_link_libraries(sylar yaml-cpp)

@@ -11,4 +11,5 @@
 #include "noncopyable.h"
 #include "macro.h"
 #include "env.h"
+#include "config.h"
 #endif //SYLAR_SYLAR_H
