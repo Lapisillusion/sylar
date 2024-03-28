@@ -3,6 +3,7 @@
 //
 #include "../../include/util.h"
 #include "../../include/log.h"
+#include "../../include/fiber.h"
 #include <ctime>
 #include <unistd.h>
 #include <cstring>
@@ -22,7 +23,8 @@ namespace sylar {
     }
 
     uint64_t GetFiberId() {
-        return 0;
+        //return Fiber::getRunId();
+        return Fiber::getRunId();
     }
 
     uint64_t GetElapsed() {

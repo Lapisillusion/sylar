@@ -26,6 +26,9 @@ add_executable(sylar main.cpp
         tests/test_config.cpp
         include/thread.h
         src/thread/thread.cpp
-        tests/test_thread.cpp)
+        tests/test_thread.cpp
+        include/fiber.h
+        src/fiber/fiber.cpp
+        tests/test_fiber.cpp)
 
 target_link_libraries(sylar yaml-cpp)

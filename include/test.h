@@ -10,5 +10,5 @@ int test_util();
 bool test_env(int argc,char** argv);
 int main_test_config(int argc, char *argv[]);
 int test_thread(int argc, char *argv[]);
-
+int test_fiber_main_func(int argc, char *argv[]);
 #endif //SYLAR_TEST_H

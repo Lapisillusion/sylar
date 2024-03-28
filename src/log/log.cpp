@@ -1,6 +1,9 @@
 //
 // Created by nepture on 2024/3/6.
 //
+#include <memory>
+#include <utility>
+
 #include "../../include/log.h"
 
 #include "../../include/macro.h"
@@ -359,7 +362,7 @@ namespace sylar
 
         if (!temp.empty())
         {
-            patterns.push_back(std::make_pair(0, temp));
+            patterns.emplace_back(0, temp);
         }
 
         for (auto &p : patterns)
@@ -423,7 +426,7 @@ namespace sylar
     void LogAppender::setFormatter(LogFormatter::ptr val)
     {
         MutexType::Lock lock(m_mutex);
-        m_formatter = val;
+        m_formatter = std::move(val);
     }
 
     LogFormatter::ptr LogAppender::getFormatter()
@@ -433,7 +436,7 @@ namespace sylar
     }
 
     StdoutLogAppender::StdoutLogAppender()
-            : LogAppender(LogFormatter::ptr(new LogFormatter()))
+            : LogAppender(std::make_shared<LogFormatter>())
     {
     }
 
